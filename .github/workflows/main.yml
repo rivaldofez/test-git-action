@@ -1,31 +1,3 @@
-name: iOS CI (Xcode Project)
-
-on:
-  push:
-    branches: [main, develop]
-  pull_request:
-    branches: [main, develop]
-
-jobs:
-  build-and-test:
-    runs-on: macos-latest
-
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Select Xcode Version
-        run: sudo xcode-select -switch /Applications/Xcode.app/Contents/Developer
-
-      - name: Build and Test (Xcode Project)
-        run: |
-          xcodebuild test \
-            -project TestGitAction.xcodeproj \
-            -scheme TestGitActionTests \
-            -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
-            CODE_SIGNING_ALLOWED=NO
-
-
 name: iOS CI (Split Unit & UI Tests)
 
 on:
