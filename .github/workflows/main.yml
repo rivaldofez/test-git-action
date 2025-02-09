@@ -30,7 +30,6 @@ jobs:
   ui-tests:
     name: Run UI Tests
     runs-on: macos-latest
-    needs: unit-tests # Ensures unit tests run first
 
     steps:
       - name: Checkout Repository
