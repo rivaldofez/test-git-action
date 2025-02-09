@@ -24,3 +24,57 @@ jobs:
             -scheme TestGitActionTests \
             -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
             CODE_SIGNING_ALLOWED=NO
+
+
+name: iOS CI (Split Unit & UI Tests)
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  unit-tests:
+    name: Run Unit Tests
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Select Xcode Version
+        run: sudo xcode-select -switch /Applications/Xcode.app/Contents/Developer
+
+      - name: Run Unit Tests
+        run: |
+          xcodebuild test \
+            -project TestGitAction.xcodeproj \
+            -scheme TestGitActionTests \
+            -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
+            -only-testing:TestGitActionTests \
+            CODE_SIGNING_ALLOWED=NO
+
+  ui-tests:
+    name: Run UI Tests
+    runs-on: macos-latest
+    needs: unit-tests # Ensures unit tests run first
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Select Xcode Version
+        run: sudo xcode-select -switch /Applications/Xcode.app/Contents/Developer
+
+      - name: Boot Simulator
+        run: xcrun simctl boot "iPhone 15"
+
+      - name: Run UI Tests
+        run: |
+          xcodebuild test \
+            -project TestGitAction.xcodeproj \
+            -scheme TestGitActionUITests \
+            -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
+            -only-testing:TestGitActionUITests \
+            CODE_SIGNING_ALLOWED=NO
