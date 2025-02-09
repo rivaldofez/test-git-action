@@ -1,0 +1,31 @@
+name: iOS CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  build-and-test:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Select Xcode Version
+        run: sudo xcode-select -switch /Applications/Xcode.app/Contents/Developer
+
+      - name: Install Dependencies (CocoaPods)
+        run: |
+          pod install --project-directory=YourProjectName
+        if: hashFiles('**/Podfile.lock') != ''
+
+      - name: Build and Test
+        run: |
+          xcodebuild test \
+            -workspace YourProjectName.xcworkspace \
+            -scheme YourSchemeName \
+            -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
+            CODE_SIGNING_ALLOWED=NO
